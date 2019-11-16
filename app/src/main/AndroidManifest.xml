@@ -24,9 +24,7 @@
             android:label="@string/add_activity_title"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <service
-            android:enabled="true"
-            android:name=".NotificationService" />
+        <receiver android:name=".NotificationPublisher" />
     </application>
 
 </manifest>

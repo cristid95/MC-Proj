@@ -39,6 +39,8 @@ public class ReminderAddActivity extends AppCompatActivity {
                    Reminder rem = new Reminder(item, "Random description");
                    String remId = Integer.toString(rem.hashCode());
                    mDbReference.child("reminderapplicationdb").child(remId).setValue(rem);
+                } else {
+                    // TODO print some message to the user
                 }
                 finish();
             }

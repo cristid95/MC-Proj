@@ -1,23 +1,26 @@
 package com.mc.reminderapplication;
 
-import java.io.Serializable;
+import android.app.Notification;
 
-public class Reminder implements Serializable {
+public class Reminder {
     public String title;
     public String description;
+    Notification notification;
 
     public Reminder() {
-        this.title = "Empty title";
-        this.description = "Empty description";
+        this.title = "";
+        this.description = "";
+        this.notification = null;
     }
 
     public Reminder(String title, String description) {
         this.title = title;
         this.description = description;
+        this.notification = null;
     }
 
     @Override
     public String toString() {
-        return "Reminder [title=" + this.title + ", description=" + this.description + "]";
+        return this.title;
     }
 }

@@ -1,6 +1,7 @@
 package com.mc.reminderapplication;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDbReference;
     private List<Reminder> reminders = new ArrayList<Reminder>();
-    protected static final String CHANNEL_ID = "4334";
+    public static final String CHANNEL_ID = "4334";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize add reminder button
         mAddReminderButton = findViewById(R.id.add_notification_btn);
-        // On clicking the floating action button
+        // Action fired on clicking the floating action button
         mAddReminderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 Reminder reminder = dataSnapshot.getValue(Reminder.class);
                 reminders.add(reminder);
                 adapter.notifyDataSetChanged();
-                addNotification(reminder);
+                createNotification(reminder);
+                scheduleNotification(reminder, 20000);
             }
 
             @Override
@@ -98,8 +100,21 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
     }
 
-    private void addNotification(Reminder reminder) {
-        Intent notificationIntent = new Intent(this, NotificationService.class);
+    private void createNotification(Reminder reminder) {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 1, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
+                .setSmallIcon(R.drawable.common_google_signin_btn_icon_light)
+                .setContentTitle(reminder.title)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(reminder.description))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(contentIntent);
+        reminder.notification = builder.build();
+
+        /*Intent notificationIntent = new Intent(this, NotificationService.class);
         notificationIntent.putExtra("title", reminder.title.toString());
         notificationIntent.putExtra("description", reminder.description.toString());
         PendingIntent servicePendingIntent = PendingIntent.getService(this, reminder.hashCode(),
@@ -112,7 +127,19 @@ public class MainActivity extends AppCompatActivity {
         if (reminder.title.compareTo("Qwerty") == 0)
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, (calendar.getTimeInMillis() + 60000), 60000, servicePendingIntent);
         else
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, (calendar.getTimeInMillis() + 40000), 40000, servicePendingIntent);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, (calendar.getTimeInMillis() + 40000), 40000, servicePendingIntent);*/
+    }
+
+    private void scheduleNotification(Reminder reminder, int delay) {
+        Intent notificationIntent = new Intent( this, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, reminder.hashCode());
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, reminder.notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this, reminder.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Calendar calendar = Calendar.getInstance();
+        Log.d("addNotification", "Setting up the alarm for generating notifications for reminder " + reminder.title);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, (calendar.getTimeInMillis() + delay), 40000, pendingIntent);
     }
 
     private void createNotificationChannel() {
