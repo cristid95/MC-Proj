@@ -1,20 +1,38 @@
 package com.mc.reminderapplication;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import androidx.core.app.NotificationCompat;
-
 import java.util.Calendar;
 
-public class NotificationService extends IntentService {
+public class NotificationPublisher extends BroadcastReceiver {
+    public static String NOTIFICATION_ID = "notification-id";
+    public static String NOTIFICATION = "notification";
 
-    private String title = null;
+    public void onReceive(Context context, Intent intent) {
+        int notificationId;
+
+        Notification notification = intent.getParcelableExtra(NOTIFICATION);
+        notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
+        Log.d(Long.toString(Calendar.getInstance().getTimeInMillis() / 1000), "NotificationPublisher onReceive start " + Integer.toString(notificationId));
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(notificationId, notification);
+        Log.d(Long.toString(Calendar.getInstance().getTimeInMillis() / 1000), "NotificationPublisher onReceive end " + Integer.toString(notificationId));
+    }
+
+
+
+
+
+
+
+
+
+    /*private String title = null;
     private String description = null;
     private int notificationId;
 
@@ -67,5 +85,5 @@ public class NotificationService extends IntentService {
         }
 
         return sum;
-    }
+    }*/
 }
