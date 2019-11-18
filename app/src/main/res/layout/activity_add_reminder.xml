@@ -20,23 +20,10 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_add_activity" />
-
-    <Button
-        android:id="@+id/save_reminder_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:backgroundTint="#D6FCBB"
-        android:text="@string/save_reminder_text" />
-
-    <EditText
-        android:id="@+id/insert_notification_subject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|left"
-        android:ems="10"
-        android:hint="Notification Title"
-        android:inputType="textPersonName" />
+    <include
+        layout="@layout/content_add_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

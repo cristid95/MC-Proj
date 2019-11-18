@@ -4,6 +4,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ReminderAddActivity"
-    tools:showIn="@layout/activity_add_reminder"/>
+    tools:showIn="@layout/activity_add_reminder">
+
+    <EditText
+        android:id="@+id/insert_notification_subject"
+        android:layout_width="330dp"
+        android:layout_height="50dp"
+        android:layout_gravity="start"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="36dp"
+        android:ems="50"
+        android:hint="@string/notification_title_expl"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/insert_notification_description"
+        android:layout_width="330dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/insert_notification_subject"
+        android:layout_marginStart="4dp"
+        android:ems="50"
+        android:hint="@string/notification_description_expl"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/insert_notification_subject" />
+
+    <TextView
+        android:id="@+id/set_date_time"
+        android:layout_width="172dp"
+        android:layout_height="24dp"
+        android:layout_below="@+id/insert_notification_description"
+        android:layout_marginTop="140dp"
+        android:text="@string/select_date_time"
+        app:layout_constraintBottom_toTopOf="@+id/datepicker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <DatePicker
+        android:id="@+id/datepicker"
+        android:layout_width="330dp"
+        android:layout_height="160dp"
+        android:layout_below="@+id/set_date_time"
+        android:layout_marginTop="184dp"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner"
+        android:headerBackground="@color/colorPrimary"
+        android:spinnersShown="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TimePicker
+        android:id="@+id/timepicker"
+        android:layout_width="330dp"
+        android:layout_height="160dp"
+        android:layout_below="@+id/datepicker"
+        android:layout_marginTop="348dp"
+        android:headerBackground="@color/colorPrimary"
+        android:spinnersShown="true"
+        android:timePickerMode="spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/insert_notification_repetition"
+        android:layout_width="330dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/timepicker"
+        android:layout_marginStart="4dp"
+        android:ems="30"
+        android:hint="@string/notification_repetition_expl"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.467"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timepicker" />
+
+    <Button
+        android:id="@+id/save_reminder_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#D6FCBB"
+        android:text="@string/save_reminder_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,4 +5,8 @@
     <string name="save_reminder_text">Save</string>
     <string name="channel_name">RemindersChannel</string>
     <string name="channel_description">Channel for transmitting reminders notification.</string>
+    <string name="notification_title_expl">Notification title</string>
+    <string name="notification_description_expl">Notification description</string>
+    <string name="notification_repetition_expl">Repeat at xYxMxDxhxmxs. Default never</string>
+    <string name="select_date_time">Select start date and time</string>
 </resources>
