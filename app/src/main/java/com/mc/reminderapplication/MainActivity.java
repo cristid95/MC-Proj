@@ -130,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
                 .setSmallIcon(R.drawable.common_google_signin_btn_icon_light)
                 .setContentTitle(reminder.title)
-                .setShowWhen(false)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(reminder.description))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_CALL)

@@ -16,7 +16,9 @@ public class NotificationPublisher extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         int notificationId;
 
-        Notification notification = intent.getParcelableExtra(NOTIFICATION);
+        Notification originalNotification = intent.getParcelableExtra(NOTIFICATION);
+        Notification notification = originalNotification.clone();
+        notification.when = Calendar.getInstance().getTimeInMillis();
         notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
         Log.d(Long.toString(Calendar.getInstance().getTimeInMillis() / 1000), "NotificationPublisher onReceive start " + Integer.toString(notificationId));
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
