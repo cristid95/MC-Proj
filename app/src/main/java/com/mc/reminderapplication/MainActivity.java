@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -29,7 +30,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDbReference;
-    private List<Reminder> reminders = new ArrayList<Reminder>();
+    private List<Reminder> reminders;
+    private Map<Integer, Integer> remindersPositions;
+    private Map<Integer, PendingIntent> notificationsIntents;
     public static final String CHANNEL_ID = "4334";
 
     @Override
@@ -62,18 +67,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        reminders = new ArrayList<Reminder>();
+        remindersPositions = new HashMap<Integer, Integer>();
+        notificationsIntents = new HashMap<Integer, PendingIntent>();
         // Get Firebase reference
         mDatabase = FirebaseDatabase.getInstance();
         mDbReference = mDatabase.getReferenceFromUrl("https://reminderapplicationdb.firebaseio.com/reminderapplicationdb");
-        // Attach a listener to read the data at our firebase reminders db
+        // Attach a listener to read the data from our Firebase reminders db
         mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Reminder rem = ds.getValue(Reminder.class);
-                    Log.d("INFO in listenersinglevalueevent", "Notification details: title: " + rem.title + " description: " +
-                            rem.description + " repeating: " + rem.repetition + " start date: " + rem.startDay + "/" + rem.startMonth + "/" +
-                            rem.startYear + " start time: " + rem.startHour + ":" + rem.startMinute);
+                    Log.d("INFO",
+                            "Notification details: title: " + rem.title +
+                                    " description: " + rem.description +
+                                    " repeating: " + rem.repetition +
+                                    " start date: " + rem.startDay + "/" + rem.startMonth + "/" + rem.startYear +
+                                    " start time: " + rem.startHour + ":" + rem.startMinute);
                     // create the notification for the reminder and bind it to the reminder
                     createNotification(rem);
                     // set the notification for being delivered to the user
@@ -81,19 +92,30 @@ public class MainActivity extends AppCompatActivity {
                     // make sure the new reminder will be shown
                     reminders.add(rem);
                     adapter.notifyDataSetChanged();
+                    remindersPositions.put(rem.id, reminders.size() - 1);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
+                Log.d("ERROR", "The read failed: " + databaseError.getCode());
             }
         });
 
-        // Display user inserted text or nothing
+        // Display notifications
         adapter = new ArrayAdapter<Reminder>(this, R.layout.activity_listview, reminders);
         listView = findViewById(R.id.mobile_list);
         listView.setAdapter(adapter);
+        // Edit and delete options for each notification are reachable by clicking them
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View arg1, int pos, long id) {
+                Reminder rem = (Reminder)adapter.getItemAtPosition(pos);
+                Intent intent = new Intent(getApplicationContext(), ReminderEditActivity.class);
+                intent.putExtra("reminder", rem);
+                startActivityForResult(intent, 1);
+            }
+        });
 
         // Set up notification environment
         createNotificationChannel();
@@ -101,24 +123,69 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
+        // requestCode = 0 => newly created reminder intent received
         if (requestCode == 0) {
-            // Make sure the request was successful
+            // Successfully created the new reminder
             if (resultCode == 0) {
-                // fetch the notification
+                // fetch the reminder
                 Reminder rem = data.getExtras().getParcelable("reminder");
-                Log.d("INFO in MainActivity", "Notification details: title: " + rem.title + " description: " +
-                        rem.description + " repeating: " + rem.repetition + " start date: " + rem.startDay + "/" + rem.startMonth + "/" +
-                        rem.startYear + " start time: " + rem.startHour + ":" + rem.startMinute);
                 // create the notification for the reminder and bind it to the reminder
+                createNotification(rem);
+                // set up a UID for the new reminder
+                rem.id = rem.hashCode();
+                // set the notification for being delivered to the user
+                scheduleNotification(rem);
+                // make sure the new reminder will be displayed in the list
+                reminders.add(rem);
+                remindersPositions.put(rem.id, reminders.size() - 1);
+                adapter.notifyDataSetChanged();
+                // save the reminder to Firebase
+                mDbReference.child(Integer.toString(rem.id)).setValue(rem);
+            }
+            else {
+                // various errors can go here
+            }
+        }
+        // requestCode = 1 => edited or deleted event
+        else if (requestCode == 1) {
+            // edited reminder passed inside the data Intent
+            if (resultCode == 0) {
+                // fetch the reminder
+                Reminder rem = data.getExtras().getParcelable("reminder");
+                // remove the old notification linked to the reminder
+                PendingIntent pi = notificationsIntents.get(rem.id);
+                AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                alarmManager.cancel(pi);
+                notificationsIntents.remove(rem.id);
+                // create a new notification for the reminder and bind it to the reminder
                 createNotification(rem);
                 // set the notification for being delivered to the user
                 scheduleNotification(rem);
-                // make sure the new reminder will be shown
-                reminders.add(rem);
+                // make sure the changes made to the reminder will be shown
+                int remIdx = remindersPositions.get(rem.id);
+                reminders.set(remIdx, rem);
                 adapter.notifyDataSetChanged();
-                // write the reminder to the Firebase
-                mDbReference.child(Integer.toString(rem.hashCode())).setValue(rem);
+                // save the reminder changes to Firebase
+                mDbReference.child(Integer.toString(rem.id)).setValue(rem);
+            }
+            // delete reminder passed inside the data Intent
+            else if (resultCode == 1) {
+                Reminder rem = data.getExtras().getParcelable("reminder");
+                // remove reminder from the list
+                int remIdx = remindersPositions.get(rem.id);
+                reminders.remove(remIdx);
+                remindersPositions.remove(rem.id);
+                adapter.notifyDataSetChanged();
+                // delete reminder from Firebase
+                mDbReference.child(Integer.toString(rem.id)).removeValue();
+                // remove the notification linked to the reminder
+                PendingIntent pi = notificationsIntents.get(rem.id);
+                AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                alarmManager.cancel(pi);
+                notificationsIntents.remove(rem.id);
+            }
+            else {
+                // various errors can go here
             }
         }
     }
@@ -141,10 +208,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void scheduleNotification(Reminder reminder) {
         Intent notificationIntent = new Intent( this, NotificationPublisher.class);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, reminder.hashCode());
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, reminder.id);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, reminder.notification);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this, reminder.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                this, reminder.id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationsIntents.put(reminder.id, pendingIntent);
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, reminder.startYear);
         calendar.set(Calendar.MONTH, reminder.startMonth);
@@ -156,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("schedule", "day: " + reminder.startDay);
         Log.d("schedule", "hour: " + reminder.startHour);
         Log.d("schedule", "minute: " + reminder.startMinute);
-        Log.d("addNotification", "Setting up the alarm for generating notifications for reminder " + reminder.title);
+        Log.d("addNotification", "Setting up the alarm for generating notifications for reminder " + reminder.id);
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         if (reminder.repetition == 0) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);

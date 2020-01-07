@@ -24,6 +24,11 @@
             android:label="@string/add_activity_title"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".ReminderEditActivity"
+            android:label="@string/edit_activity_title"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <receiver android:name=".NotificationPublisher" />
     </application>
 

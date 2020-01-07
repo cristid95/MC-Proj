@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import java.util.Calendar;
 
@@ -20,9 +19,7 @@ public class NotificationPublisher extends BroadcastReceiver {
         Notification notification = originalNotification.clone();
         notification.when = Calendar.getInstance().getTimeInMillis();
         notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
-        Log.d(Long.toString(Calendar.getInstance().getTimeInMillis() / 1000), "NotificationPublisher onReceive start " + Integer.toString(notificationId));
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notificationId, notification);
-        Log.d(Long.toString(Calendar.getInstance().getTimeInMillis() / 1000), "NotificationPublisher onReceive end " + Integer.toString(notificationId));
     }
 }

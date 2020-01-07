@@ -45,26 +45,24 @@ public class ReminderAddActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String title = mInsertNotificationSubject.getText().toString();
-                String description = mInsertNotificationDescription.getText().toString();
-                int minute = mtimePicker.getMinute();
-                int hour = mtimePicker.getHour();
-                int day = mdatePicker.getDayOfMonth();
-                int month = mdatePicker.getMonth();
-                int year = mdatePicker.getYear();
-                String repetition = mInsertRepetitionInterval.getText().toString();
-                Log.d("INFO", "Notification details: title: " + title + " description: " +
-                        description + " repeating: " + repetition + " start date: " + day + "/" + month + "/" +
-                        year + " start time: " + hour + ":" + minute);
                 Intent result = new Intent();
                 if (title.length() > 0) {
+                    String description = mInsertNotificationDescription.getText().toString();
+                    int minute = mtimePicker.getMinute();
+                    int hour = mtimePicker.getHour();
+                    int day = mdatePicker.getDayOfMonth();
+                    int month = mdatePicker.getMonth();
+                    int year = mdatePicker.getYear();
+                    String repetition = mInsertRepetitionInterval.getText().toString();
                     Reminder rem = new Reminder(title, description, year, month, day, hour, minute, repetition);
-                    Log.d("INFO", "Notification details: title: " + rem.title + " description: " +
-                            rem.description + " repeating: " + rem.repetition + " start date: " + rem.startDay + "/" + rem.startMonth + "/" +
-                            rem.startYear + " start time: " + rem.startHour + ":" + rem.startMinute);
+                    Log.d("INFO", "Add Notification: title: " + rem.title +
+                            " description: " + rem.description +
+                            " repeating: " + rem.repetition +
+                            " start date: " + rem.startDay + "/" + rem.startMonth + "/" + rem.startYear +
+                            " start time: " + rem.startHour + ":" + rem.startMinute);
                     result.putExtra("reminder", rem);
                     setResult(0, result);
                 } else {
-                    // TODO print some message to the user
                     setResult(1, result);
                 }
                 finish();

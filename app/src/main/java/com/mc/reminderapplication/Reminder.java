@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Reminder implements Parcelable {
+    public int id;
     public String title;
     public String description;
     public int startYear;
@@ -20,6 +21,7 @@ public class Reminder implements Parcelable {
     Notification notification;
 
     public Reminder() {
+        this.id = 0;
         this.title = "";
         this.description = "";
         this.startYear = 0;
@@ -33,6 +35,7 @@ public class Reminder implements Parcelable {
 
     public Reminder(String title, String description, int year, int month, int  day,
                     int hour, int minute, String repetition) {
+        this.id = 0;
         this.title = title;
         this.description = description;
         this.startYear = year;
@@ -46,6 +49,7 @@ public class Reminder implements Parcelable {
 
     public Reminder(String title, String description, int year, int month, int  day,
                     int hour, int minute, long repetition) {
+        this.id = 0;
         this.title = title;
         this.description = description;
         this.startYear = year;
@@ -58,6 +62,7 @@ public class Reminder implements Parcelable {
     }
 
     protected Reminder(Parcel in) {
+        this.id = in.readInt();
         this.title = in.readString();
         this.description = in.readString();
         this.startYear = in.readInt();
@@ -154,6 +159,7 @@ public class Reminder implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(this.id);
         out.writeString(this.title);
         out.writeString(this.description);
         out.writeInt(this.startYear);
