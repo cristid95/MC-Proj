@@ -1,4 +1,4 @@
-# MC-Proj
+# Reminder application
 
 # Description
 
