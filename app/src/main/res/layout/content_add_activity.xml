@@ -20,6 +20,7 @@
         android:textColorHighlight="#36C53D"
         android:textColorLink="#36C53D"
         android:textCursorDrawable="@drawable/green_cursor"
+        app:backgroundTint="#36C53D"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,6 +37,7 @@
         android:textColorHighlight="#36C53D"
         android:textColorLink="#36C53D"
         android:textCursorDrawable="@drawable/green_cursor"
+        app:backgroundTint="#36C53D"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/insert_notification_subject" />
@@ -95,6 +97,7 @@
         android:textColorHighlight="#36C53D"
         android:textColorLink="#36C53D"
         android:textCursorDrawable="@drawable/green_cursor"
+        app:backgroundTint="#36C53D"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.467"
         app:layout_constraintStart_toStartOf="parent"

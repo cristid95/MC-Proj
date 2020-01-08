@@ -61,9 +61,9 @@ public class ReminderAddActivity extends AppCompatActivity {
                             " start date: " + rem.startDay + "/" + rem.startMonth + "/" + rem.startYear +
                             " start time: " + rem.startHour + ":" + rem.startMinute);
                     result.putExtra("reminder", rem);
-                    setResult(0, result);
+                    setResult(2, result);
                 } else {
-                    setResult(1, result);
+                    setResult(3, result);
                 }
                 finish();
             }

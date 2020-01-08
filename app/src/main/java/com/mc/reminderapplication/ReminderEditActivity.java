@@ -65,7 +65,7 @@ public class ReminderEditActivity extends AppCompatActivity {
                     rem.startYear = mdatePicker.getYear();
                     rem.repetition = rem.parse(mInsertRepetitionInterval.getText().toString());
                     result.putExtra("reminder", rem);
-                    setResult(0, result);
+                    setResult(2, result);
                     Log.d("INFO",
                             "Edit Notification: title: " + rem.title +
                                     " description: " + rem.description +
@@ -73,7 +73,7 @@ public class ReminderEditActivity extends AppCompatActivity {
                                     " start date: " + rem.startDay + "/" + rem.startMonth + "/" + rem.startYear +
                                     " start time: " + rem.startHour + ":" + rem.startMinute);
                 } else {
-                    setResult(2, result);
+                    setResult(4, result);
                 }
                 finish();
             }
@@ -93,7 +93,7 @@ public class ReminderEditActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 Intent result = new Intent();
                                 result.putExtra("reminder", rem);
-                                setResult(1, result);
+                                setResult(3, result);
                                 finish();
                             }
                         })

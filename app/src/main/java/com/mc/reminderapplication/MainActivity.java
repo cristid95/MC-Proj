@@ -123,10 +123,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // allows us to return to previous activity (from the stack)
+        // on pressing the back button
+        if (resultCode == RESULT_CANCELED) {
+            return;
+        }
         // requestCode = 0 => newly created reminder intent received
         if (requestCode == 0) {
             // Successfully created the new reminder
-            if (resultCode == 0) {
+            if (resultCode == 2) {
                 // fetch the reminder
                 Reminder rem = data.getExtras().getParcelable("reminder");
                 // create the notification for the reminder and bind it to the reminder
@@ -149,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         // requestCode = 1 => edited or deleted event
         else if (requestCode == 1) {
             // edited reminder passed inside the data Intent
-            if (resultCode == 0) {
+            if (resultCode == 2) {
                 // fetch the reminder
                 Reminder rem = data.getExtras().getParcelable("reminder");
                 // remove the old notification linked to the reminder
@@ -169,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 mDbReference.child(Integer.toString(rem.id)).setValue(rem);
             }
             // delete reminder passed inside the data Intent
-            else if (resultCode == 1) {
+            else if (resultCode == 3) {
                 Reminder rem = data.getExtras().getParcelable("reminder");
                 // remove reminder from the list
                 int remIdx = remindersPositions.get(rem.id);
