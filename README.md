@@ -1,11 +1,16 @@
 # Reminder application
 
 # Description
-
 The application allows users to create, manage and delete reminders. They will be reminded of the events through Push Notifications.
 
-### Reminder synchronization
+### Spoilers
+The folder app_screenshots contains screens representing activities of the application. They offer a brief overview of how the application looks and works.
+
+### Reminders synchronization across multiple devices
 In order for the reminders to be synchronized on all user devices, Firebase is used to store them. When the user attempts to install the application on a new device, the reminders will be automatically pulled from Firebase and their notifications will be set up.
+
+### Start using the app
+When a new user wants to start using the application, he/she must be first added to the list of allowed users in order to have access to Firebase. This can be done from the Firebase console. For the moment, only a user has access to the database. After being added to the list, the user can login into the application with the registered email and password. This is mandatory in order to ensure that each user has access only to his/her own data, and no other user can read/write data that does not belong to him/her. 
 
 ### Reminder create
 The user can create a new reminder by pressing the green button from the bottom right part of the Main Activity. A new activity will appear and the user is able to provide values for the following fields of the reminder:
