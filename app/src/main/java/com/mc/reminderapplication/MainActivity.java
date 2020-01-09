@@ -16,12 +16,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton mAddReminderButton;
     private ArrayAdapter adapter;
     private ListView listView;
-    private FirebaseDatabase mDatabase;
     private DatabaseReference mDbReference;
     private List<Reminder> reminders;
     private Map<Integer, Integer> remindersPositions;
@@ -70,9 +75,31 @@ public class MainActivity extends AppCompatActivity {
         reminders = new ArrayList<Reminder>();
         remindersPositions = new HashMap<Integer, Integer>();
         notificationsIntents = new HashMap<Integer, PendingIntent>();
-        // Get Firebase reference
-        mDatabase = FirebaseDatabase.getInstance();
-        mDbReference = mDatabase.getReferenceFromUrl("https://reminderapplicationdb.firebaseio.com/reminderapplicationdb");
+        // Get user-provided email address and password
+        final String email = getIntent().getExtras().getString("email");
+        final String password = getIntent().getExtras().getString("password");
+        // Authenticate with provided email and password
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("INFO", "signInWithEmail:success");
+                        } else {
+                            Log.w("INFO", "signInWithEmail:failure", task.getException());
+                            Toast toast = Toast.makeText(MainActivity.this, "Credentials rejected. Please try again", Toast.LENGTH_SHORT);
+                            toast.show();
+                            finish();
+                        }
+                    }
+                });
+        // Get Firebase database reference of authenticated user
+        String userId = mAuth.getCurrentUser().getUid();
+        mDbReference = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://reminderapplicationdb.firebaseio.com")
+                .child("users")
+                .child(userId);
         // Attach a listener to read the data from our Firebase reminders db
         mDbReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
